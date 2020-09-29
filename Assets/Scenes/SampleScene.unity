@@ -444,6 +444,7 @@ GameObject:
   - component: {fileID: 378198827}
   - component: {fileID: 378198826}
   - component: {fileID: 378198828}
+  - component: {fileID: 378198829}
   m_Layer: 5
   m_Name: ThrowingWindow
   m_TagString: Untagged
@@ -517,10 +518,10 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.22502136, y: -0.07077026}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -531,8 +532,20 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 160.069, y: 20.105774}
+  m_Size: {x: 765, y: 20}
   m_EdgeRadius: 0
+--- !u!114 &378198829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378198824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abea17743c67d44478610ecbe9c64b38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &466055112
 GameObject:
   m_ObjectHideFlags: 0
@@ -676,7 +689,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -741,8 +754,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 1229618877}
-  acceleration: 0.02
   window: {fileID: 378198825}
+  windowCollider: {fileID: 378198828}
+  windowShrinkingSpeedMutliplier: 1
+  accelerationMultiplier: 1
+  colliderDeltaModifier: 0.95
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1191,8 +1207,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 244.5}
-  m_SizeDelta: {x: 160, y: 20}
+  m_AnchoredPosition: {x: 0, y: 211}
+  m_SizeDelta: {x: 27.3, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1229618877
 MonoBehaviour:
@@ -1352,9 +1368,10 @@ GameObject:
   - component: {fileID: 1762802812}
   - component: {fileID: 1762802814}
   - component: {fileID: 1762802813}
+  - component: {fileID: 1762802815}
   m_Layer: 5
   m_Name: Handle
-  m_TagString: Untagged
+  m_TagString: Indicator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1415,6 +1432,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762802811}
   m_CullTransparentMesh: 0
+--- !u!58 &1762802815
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762802811}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 10.25
 --- !u!1 &1918879234
 GameObject:
   m_ObjectHideFlags: 0
