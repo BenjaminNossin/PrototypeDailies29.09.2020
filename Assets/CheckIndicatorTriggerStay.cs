@@ -12,7 +12,8 @@ public class CheckIndicatorTriggerStay : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Space) && detectedCollider == null)
         {
-            OnFailedRelease(); 
+            OnFailedRelease();
+            Debug.Log("failed release"); 
         }
     }
 

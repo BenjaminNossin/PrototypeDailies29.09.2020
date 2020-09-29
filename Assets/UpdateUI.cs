@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,34 +24,51 @@ public class UpdateUI : MonoBehaviour
     public HighScoreData highScoreData;
     private int newScore;
     public PlayerRotation rotation;
-    public TMP_Text score;
+    public TMP_Text countDownTMP;
+    public TMP_Text scoreTMP;
+    public TMP_Text congratsTMP;
     public List <TMP_Text> highScoreTMPList;
 
-    bool ballIsThrown;
+    bool gameStateIsUpdated;
     public bool resetHighScore = false;
 
     public GameObject winPanel;
     public GameObject gameOverPanel;
+    public GameObject countDownObj;
 
-    public const int scoreMultiplier = 10;
+    private float scoreMultiplier;
+    private float countDown;
 
-    private AsyncOperation asyncOperation; 
+    private bool hasMissed;
+
+    private int clipSelector;
+    public List<AudioClip> clipToPlay;
+    public AudioSource badassMusicSource;
 
     private void OnEnable()
     {
-        ballIsThrown = false; 
-        CheckIndicatorTriggerStay.OnSuccessfullRelease += UpdateGameState;
-        CheckIndicatorTriggerStay.OnFailedRelease += ShowGameOverPanel; 
+        gameStateIsUpdated = false;
+        scoreMultiplier = 8f;
+        countDown = 4f; 
+
+        CheckIndicatorTriggerStay.OnSuccessfullRelease += ShowWinPanel;
+        CheckIndicatorTriggerStay.OnFailedRelease += ShowGameOverPanel;
+
+        clipSelector = UnityEngine.Random.Range(0, clipToPlay.Count);
+        badassMusicSource.PlayOneShot(clipToPlay[clipSelector]);
     }
 
     void FixedUpdate()
     {
-        if (!ballIsThrown && Input.GetKey(KeyCode.Space))
+        if (!gameStateIsUpdated && Input.GetKey(KeyCode.Space))
             UpdateUIVisual();
     }
 
     void UpdateUIVisual()
     {
+        // increase score multiplier
+        scoreMultiplier += Time.fixedDeltaTime;
+
         // increase linear delta 
         windowShrinkingDelta += Time.fixedDeltaTime * windowShrinkingSpeedMutliplier;
         accelerationDelta += Time.fixedDeltaTime * accelerationMultiplier;
@@ -67,56 +86,98 @@ public class UpdateUI : MonoBehaviour
             // windox collider shrinking
             windowCollider.size = new Vector2(windowCollider.size.x - (windowShrinkingDelta * colliderDeltaModifier), windowCollider.size.y); 
         }
+        else
+        {
+            countDownObj.SetActive(true);
+            countDown -= Time.fixedDeltaTime;
+            countDownTMP.text = $"{Math.Truncate(countDown)} seconds left !"; 
+        }
+
+        if (countDown < 1f)
+        {
+            CheckIndicatorTriggerStay.OnFailedRelease(); 
+        }
     }
 
-    void UpdateGameState()
+    IEnumerator UpdateGameState()
     {
-        ballIsThrown = true;
-        newScore += (int)rotation.SendForceInfo() * scoreMultiplier; 
+        yield return new WaitForFixedUpdate(); 
 
-        if (newScore > highScoreData.CurrentHighScore)
-            highScoreData.CurrentHighScore = newScore;
+        gameStateIsUpdated = true;
 
+        // update score on win
+        if (!hasMissed)
+        {
+            newScore += (int)rotation.SendForceInfo() * (int)scoreMultiplier; 
+
+            if (newScore > highScoreData.CurrentHighScore)
+                highScoreData.CurrentHighScore = newScore;
+
+            scoreTMP.text = $"Your score is : {newScore}";
+
+            if (newScore >= 200 && newScore < 300)
+            {
+                congratsTMP.text = "Quite Impressive !";
+            }
+            else if (newScore >= 300 && newScore < 350)
+            {
+                congratsTMP.text = "Very Impressive !!";
+            }
+            else if (newScore >= 350)
+            {
+                congratsTMP.text = "Truly Impressive !!!";
+            }
+            else
+            {
+                congratsTMP.text = "Nice Throw";
+            }
+        }
+
+        // show highscore anyway
         foreach(TMP_Text item in highScoreTMPList)
         {
             item.text = $"High score : {highScoreData.CurrentHighScore}";
         }
+    }
 
-        score.text = $"Your score is : {newScore}";
+    IEnumerator Win()
+    {
+        yield return new WaitForSeconds(2f);
 
+        winPanel.SetActive(true);
+    }
 
-        StartCoroutine(ShowWinPanel()); 
+    IEnumerator Lose()
+    {
+        yield return new WaitForFixedUpdate();
+
+        gameOverPanel.SetActive(true);
+    }
+    void ShowWinPanel()
+    {
+        if (countDown > 0f)
+        {
+            hasMissed = false; 
+
+            StartCoroutine(UpdateGameState());
+            StartCoroutine(Win());
+        }
     }
 
     void ShowGameOverPanel()
     {
-        gameOverPanel.SetActive(true);
-        Time.timeScale = 0f;
-    }
+        if (!gameStateIsUpdated) // avoid double check from countDonw loss 
+        {
+            hasMissed = true; 
 
-    IEnumerator ShowWinPanel()
-    {
-        yield return new WaitForSecondsRealtime(2f); 
-        winPanel.SetActive(true);
-        Time.timeScale = 0f; 
+            StartCoroutine(UpdateGameState());
+            StartCoroutine(Lose());
+        }
     }
 
     public void PlayAgain()
     {
-        asyncOperation = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
-        asyncOperation.allowSceneActivation = false; 
-
-        if (asyncOperation.progress >= 0.9f)
-        {
-            StartCoroutine(LoadNewGame());
-            Debug.Log("scene ready to be loaded"); 
-        }
-    }
-
-    IEnumerator LoadNewGame()
-    {
-        yield return new WaitForSecondsRealtime(2f);
-        asyncOperation.allowSceneActivation = true;
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
     }
 
     public void QuitGame()
@@ -126,7 +187,7 @@ public class UpdateUI : MonoBehaviour
 
     private void OnDisable()
     {
-        CheckIndicatorTriggerStay.OnSuccessfullRelease -= UpdateGameState;
+        CheckIndicatorTriggerStay.OnSuccessfullRelease -= ShowWinPanel;
         CheckIndicatorTriggerStay.OnFailedRelease -= ShowGameOverPanel;
 
         if (resetHighScore)
