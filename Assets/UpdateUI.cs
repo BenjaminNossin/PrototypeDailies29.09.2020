@@ -1,6 +1,8 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UpdateUI : MonoBehaviour
@@ -21,7 +23,7 @@ public class UpdateUI : MonoBehaviour
     private int newScore;
     public PlayerRotation rotation;
     public TMP_Text score;
-    public TMP_Text highScore;
+    public List <TMP_Text> highScoreTMPList;
 
     bool ballIsThrown;
     public bool resetHighScore = false;
@@ -29,8 +31,9 @@ public class UpdateUI : MonoBehaviour
     public GameObject winPanel;
     public GameObject gameOverPanel;
 
-    public const int scoreMultiplier = 10; 
+    public const int scoreMultiplier = 10;
 
+    private AsyncOperation asyncOperation; 
 
     private void OnEnable()
     {
@@ -74,8 +77,13 @@ public class UpdateUI : MonoBehaviour
         if (newScore > highScoreData.CurrentHighScore)
             highScoreData.CurrentHighScore = newScore;
 
+        foreach(TMP_Text item in highScoreTMPList)
+        {
+            item.text = $"High score : {highScoreData.CurrentHighScore}";
+        }
+
         score.text = $"Your score is : {newScore}";
-        highScore.text = $"High score : {highScoreData.CurrentHighScore}";
+
 
         StartCoroutine(ShowWinPanel()); 
     }
@@ -91,6 +99,29 @@ public class UpdateUI : MonoBehaviour
         yield return new WaitForSecondsRealtime(2f); 
         winPanel.SetActive(true);
         Time.timeScale = 0f; 
+    }
+
+    public void PlayAgain()
+    {
+        asyncOperation = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
+        asyncOperation.allowSceneActivation = false; 
+
+        if (asyncOperation.progress >= 0.9f)
+        {
+            StartCoroutine(LoadNewGame());
+            Debug.Log("scene ready to be loaded"); 
+        }
+    }
+
+    IEnumerator LoadNewGame()
+    {
+        yield return new WaitForSecondsRealtime(2f);
+        asyncOperation.allowSceneActivation = true;
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
     private void OnDisable()

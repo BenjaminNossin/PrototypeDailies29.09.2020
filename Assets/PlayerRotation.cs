@@ -15,13 +15,13 @@ public class PlayerRotation : MonoBehaviour
 
     private void OnEnable()
     {
-        CheckIndicatorTriggerStay.OnSuccessfullRelease += ReleaseBallLikeCrazy; 
+        CheckIndicatorTriggerStay.OnSuccessfullRelease += ReleaseBallLikeCrazy;
     }
 
     private void Awake()
     {
         RotationForce = 0f;
-        ballBehaviour.enabled = false; 
+        ballBehaviour.enabled = false;
     }
 
     void FixedUpdate()
