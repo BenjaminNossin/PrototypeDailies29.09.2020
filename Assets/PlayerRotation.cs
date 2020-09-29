@@ -11,7 +11,12 @@ public class PlayerRotation : MonoBehaviour
     public Transform hand;
     public BallTranslation ballBehaviour; 
 
-    public static Action OnThrowing; 
+    public static Action OnThrowing;
+
+    private void OnEnable()
+    {
+        CheckIndicatorTriggerStay.OnSuccessfullRelease += ReleaseBallLikeCrazy; 
+    }
 
     private void Awake()
     {
@@ -22,7 +27,6 @@ public class PlayerRotation : MonoBehaviour
     void FixedUpdate()
     {
         RotateLikeCrazy();
-        ReleaseBallLikeCrazy(); 
     }
 
     private void RotateLikeCrazy()
@@ -39,13 +43,14 @@ public class PlayerRotation : MonoBehaviour
 
     private void ReleaseBallLikeCrazy()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            Debug.Log("release"); 
-            ballBehaviour.enabled = true; 
-            hand.DetachChildren(); 
-        }
+        ballBehaviour.enabled = true; 
+        hand.DetachChildren(); 
     }
 
-    public float SendForceInfo() => forceToAdd; 
+    public float SendForceInfo() => forceToAdd;
+
+    private void OnDisable()
+    {
+        CheckIndicatorTriggerStay.OnSuccessfullRelease -= ReleaseBallLikeCrazy;
+    }
 }
