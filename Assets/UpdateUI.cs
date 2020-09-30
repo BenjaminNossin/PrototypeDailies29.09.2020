@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -45,17 +44,26 @@ public class UpdateUI : MonoBehaviour
     public List<AudioClip> clipToPlay;
     public AudioSource badassMusicSource;
 
+    public Image audioButtonImage;
+    public Sprite audioIsOn_Sprite;
+    public Sprite audioIsOff_Sprite;
+
+    private bool musicIsOff = false; 
+
     private void OnEnable()
     {
         gameStateIsUpdated = false;
         scoreMultiplier = 8f;
-        countDown = 4f; 
+        countDown = 4f;
+        audioButtonImage.sprite = audioIsOn_Sprite; 
 
         CheckIndicatorTriggerStay.OnSuccessfullRelease += ShowWinPanel;
         CheckIndicatorTriggerStay.OnFailedRelease += ShowGameOverPanel;
 
         clipSelector = UnityEngine.Random.Range(0, clipToPlay.Count);
         badassMusicSource.PlayOneShot(clipToPlay[clipSelector]);
+
+        Debug.Log($"music volume is : {badassMusicSource.volume}");
     }
 
     void FixedUpdate()
@@ -173,6 +181,20 @@ public class UpdateUI : MonoBehaviour
             StartCoroutine(UpdateGameState());
             StartCoroutine(Lose());
         }
+    }
+
+    public void TurnSoundOnOrOff()
+    {
+        badassMusicSource.volume = musicIsOff.CompareTo(badassMusicSource.volume >= 0.9f);
+        musicIsOff = !musicIsOff;
+
+        if (musicIsOff)
+            audioButtonImage.sprite = audioIsOff_Sprite;
+        else
+            audioButtonImage.sprite = audioIsOn_Sprite;
+
+        Debug.Log($"music volume is : {badassMusicSource.volume}");
+        Debug.Log($"music is off is : {musicIsOff}");
     }
 
     public void PlayAgain()

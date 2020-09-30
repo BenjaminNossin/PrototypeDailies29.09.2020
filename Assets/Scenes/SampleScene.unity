@@ -1203,6 +1203,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 952cf19f101e70e43ae74b65608efed7, type: 3}
   - {fileID: 8300000, guid: 3df9ef5c1e455e8419272753751c6e22, type: 3}
   badassMusicSource: {fileID: 623580495}
+  audioButtonImage: {fileID: 1845282901}
+  audioIsOn_Sprite: {fileID: 21300000, guid: 55faf6dd36cb9934c80a18e1412f9058, type: 3}
+  audioIsOff_Sprite: {fileID: 21300000, guid: 51cb249c08374ac48acd6fac7fdacfba, type: 3}
 --- !u!82 &623580495
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3627,7 +3630,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1845282901}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 623580494}
+        m_MethodName: TurnSoundOnOrOff
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1845282901
 MonoBehaviour:
   m_ObjectHideFlags: 0
