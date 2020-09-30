@@ -11,7 +11,7 @@ Minor Bug :
 - when turning sound on or off, click on the play screen before pressing space bar. Otherwise, the sound resumes to precedent state
 
 And most importantly :
-- Any feedback is much appreciated ! You can contact me here : f.malagugini@orange.fr
+- Any feedback is much appreciated ! You can contact me here : f.malagugini@orange.fr, or on my twitter : @BNossin
 
 Cf. Assets/ for music credits
 
